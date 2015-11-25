@@ -57,11 +57,6 @@ class View extends Storage
     protected $template;
 
     /**
-     * @var string Paths to the view folders.
-     */
-    protected $folders = [];
-
-    /**
      * @var array Stack for parent files.
      */
     protected $layouts = [];
@@ -99,47 +94,6 @@ class View extends Storage
             $this->methods[$key] = [$extension, $value];
         }
         return $this;
-    }
-
-    /**
-     * Adds folder for views.
-     *
-     * @param string $name   The name of folder.
-     * @param string $folder Path to folder.
-     *
-     * @return object View object.
-     */
-    public function addFolder($name, $folder)
-    {
-        $this->folders[$name] = rtrim(trim($folder), '/').'/';
-        return $this;
-    }
-
-    /**
-     * Generates path for template.
-     *
-     * @param string $template The name of template.
-     *
-     * @return string Resolved path.
-     * @throws \Lebran\Mvc\View\Exception
-     */
-    protected function resolvePath($template)
-    {
-        $parts = explode('::', $template);
-        if (count($parts) === 1) {
-            foreach ($this->folders as $folder) {
-                if (is_file($folder.$parts[0].'.php')) {
-                    return $folder.$parts[0].'.php';
-                }
-            }
-        } else if (count($parts) === 2 && is_file($this->folders[$parts[0]].$parts[1].'.php')) {
-            return $this->folders[$parts[0]].$parts[1].'.php';
-        }
-
-        throw new Exception(
-            'The template name "'.$this->template.'" is not valid. '.
-            'Do not use the folder namespace separator "::" more than once.'
-        );
     }
 
     /**
