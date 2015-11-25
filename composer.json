@@ -1,0 +1,24 @@
+{
+  "name": "lebran/view",
+  "description": "Template system.",
+  "homepage": "https://vk.com/id126790791",
+  "license": "MIT Licence",
+  "support": {
+    "issues": "https://github.com/lebran/view/issues",
+    "source": "https://github.com/lebran/view"
+  },
+  "authors": [
+    {
+      "email": "itoktor@gmail.com",
+      "name": "Roman Kritskiy",
+      "role": "Lead"
+    }
+  ],
+  "autoload": {
+    "psr-4": { "Lebran\\": "src/" }
+  },
+  "require": {
+    "lebran/utils": "dev-master"
+  },
+  "type": "library"
+}
