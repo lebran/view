@@ -3,6 +3,7 @@ namespace Lebran;
 
 use Lebran\Utils\Storage;
 use Lebran\View\Exception;
+use Lebran\View\FolderTrait;
 use Lebran\View\Extension\ExtensionInterface;
 
 /**
@@ -41,15 +42,7 @@ use Lebran\View\Extension\ExtensionInterface;
  */
 class View extends Storage
 {
-    /**
-     * @var array Storage for extensions.
-     */
-    protected $extensions = [];
-
-    /**
-     * @var array Storage for extension methods.
-     */
-    protected $methods = [];
+    use FolderTrait;
 
     /**
      * @var string The name of last rendered template.
@@ -75,25 +68,10 @@ class View extends Storage
     public function __construct(array $extensions = [], array $data = [])
     {
         parent::__construct($data);
+        $this->setFileExtension('php');
         foreach ($extensions as $extension) {
             $this->addExtension($extension);
         }
-    }
-
-    /**
-     * Adds extensions.
-     *
-     * @param ExtensionInterface $extension Extension object.
-     *
-     * @return object View object.
-     */
-    public function addExtension(ExtensionInterface $extension)
-    {
-        $this->extensions[$extension->getName()] = $extension;
-        foreach ($extension->getMethods() as $key => $value) {
-            $this->methods[$key] = [$extension, $value];
-        }
-        return $this;
     }
 
     /**
@@ -103,7 +81,7 @@ class View extends Storage
      * @param array  $data     An array of data.
      *
      * @return string Rendered template.
-     * @throws \Lebran\Mvc\View\Exception
+     * @throws \Lebran\View\Exception
      */
     public function render($template, array $data = [])
     {
@@ -124,48 +102,13 @@ class View extends Storage
     }
 
     /**
-     * Magic method used to call extension functions.
-     *
-     * @param string $method     The name of method.
-     * @param array  $parameters The params of method.
-     *
-     * @return mixed Method response.
-     * @throws \Lebran\Mvc\View\Exception
-     */
-    public function __call($method, $parameters)
-    {
-        if (array_key_exists($method, $this->methods)) {
-            return call_user_func_array($this->methods[$method], $parameters);
-        } else {
-            throw new Exception('The extension method "'.$method.'" not found.');
-        }
-    }
-
-    /**
-     * Magic method used to get extension.
-     *
-     * @param string $name The name of extension.
-     *
-     * @return object Extension object.
-     * @throws \Lebran\Mvc\View\Exception
-     */
-    public function __get($name)
-    {
-        if (array_key_exists($name, $this->extensions)) {
-            return $this->extensions[$name];
-        } else {
-            throw new Exception('The extension "'.$name.'" not found.');
-        }
-    }
-
-    /**
      * Set the template's layout.
      *
-     * @param string $layout The name of layout
+     * @param string $layout The name of layout.
      *
      * @return void
      */
-    protected function layout($layout)
+    protected function extend($layout)
     {
         $this->layouts[] = $layout;
     }
@@ -186,7 +129,7 @@ class View extends Storage
      * @param string $template The name of template.
      *
      * @return void
-     * @throws \Lebran\Mvc\View\Exception
+     * @throws \Lebran\View\Exception
      */
     protected function import($template)
     {

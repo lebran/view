@@ -3,9 +3,9 @@ namespace Lebran\View;
 
 trait FolderTrait
 {
-    protected static $extension = 'php';
+    protected $file_extension;
 
-    protected static $separator = '::';
+    protected $separator = '::';
 
     /**
      * @var string Paths to the view folders.
@@ -26,8 +26,20 @@ trait FolderTrait
         return $this;
     }
 
-    public function addFolders(array $folders){
+    public function addFolders(array $folders)
+    {
         $this->folders = array_merge($this->folders, array_map([$this, 'escapePath']), $folders);
+        return $this;
+    }
+
+    public function setFileExtension($extension)
+    {
+        $this->file_extension = trim(trim($extension), '.');
+    }
+
+    public function setSeparator($separator)
+    {
+        $this->separator = $separator;
         return $this;
     }
 
@@ -41,26 +53,39 @@ trait FolderTrait
      */
     protected function resolvePath($template)
     {
-        $parts = explode(static::$separator, $template);
+        $parts = explode($this->separator, $template);
         $count = count($parts);
+
         if (1 === $count) {
-            foreach ($this->folders as $folder) {
-                if (is_file($folder.$parts[0].'.php')) {
-                    return $folder.$parts[0].'.php';
-                }
-            }
-        } else if (count($parts) === 2 && is_file($this->folders[$parts[0]].$parts[1].'.php')) {
-            return $this->folders[$parts[0]].$parts[1].'.php';
+            $paths  = $this->folders;
+            $folder = $parts[0];
+        } else if (2 === $count) {
+            $paths  = (array)$this->folders[$parts[0]];
+            $folder = $parts[1];
+        } else {
+            throw new Exception('Do not use the folder namespace separator "'.$this->separator.'" more than once.');
         }
 
-        throw new Exception(
-            'The template name "'.$template.'" is not valid. '.
-            'Do not use the folder namespace separator "::" more than once.'
-        );
+        if (($path = $this->checkPaths($paths, $folder))) {
+            return $path;
+        }
+
+        throw new Exception('The template "'.$template.'" is not found.');
     }
 
     protected function escapePath($path)
     {
         return trim(trim($path), '/');
+    }
+
+    protected function checkPaths(array $paths, $folder)
+    {
+        foreach ($paths as $path) {
+            if (is_file($full = $path.'/'.$folder.'.'.$this->file_extension?$this->file_extension:'')) {
+                return $full;
+            }
+        }
+
+        return false;
     }
 }
