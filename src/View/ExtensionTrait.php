@@ -8,6 +8,9 @@
 
 namespace Lebran\View;
 
+use Closure;
+use BadMethodCallException;
+
 trait ExtensionTrait
 {
     /**
@@ -16,9 +19,9 @@ trait ExtensionTrait
     protected $extensions = [];
 
     /**
-     * @var array Storage for extension methods.
+     * @var array Storage for extension methods or functions.
      */
-    protected $methods = [];
+    protected $functions = [];
 
     /**
      * Adds extensions.
@@ -31,8 +34,22 @@ trait ExtensionTrait
     {
         $this->extensions[$extension->getName()] = $extension;
         foreach ($extension->getMethods() as $key => $value) {
-            $this->methods[$key] = [$extension, $value];
+            $this->functions[$key] = [$extension, $value];
         }
+        return $this;
+    }
+
+    public function addExtensions(array $extensions)
+    {
+        foreach ($extensions as $extension) {
+            $this->addExtension($extension);
+        }
+        return $this;
+    }
+
+    public function addFunction($name, Closure $function)
+    {
+        $this->functions[$name] = $function;
         return $this;
     }
 
@@ -47,10 +64,10 @@ trait ExtensionTrait
      */
     public function __call($method, $parameters)
     {
-        if (array_key_exists($method, $this->methods)) {
-            return call_user_func_array($this->methods[$method], $parameters);
+        if (array_key_exists($method, $this->functions)) {
+            return call_user_func_array($this->functions[$method], $parameters);
         } else {
-            throw new Exception('The extension method "'.$method.'" not found.');
+            throw new BadMethodCallException('The extension method or function "'.$method.'" not found.');
         }
     }
 
@@ -69,5 +86,10 @@ trait ExtensionTrait
         } else {
             throw new Exception('The extension "'.$name.'" not found.');
         }
+    }
+
+    public function __set($name, $extension)
+    {
+        $this->addExtension($name, $extension);
     }
 }

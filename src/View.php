@@ -3,6 +3,7 @@ namespace Lebran;
 
 use Lebran\Utils\Storage;
 use Lebran\View\Exception;
+use Lebran\View\ExtensionTrait;
 use Lebran\View\FolderTrait;
 use Lebran\View\Extension\ExtensionInterface;
 
@@ -42,7 +43,7 @@ use Lebran\View\Extension\ExtensionInterface;
  */
 class View extends Storage
 {
-    use FolderTrait;
+    use FolderTrait, ExtensionTrait;
 
     /**
      * @var string The name of last rendered template.

@@ -1,6 +1,8 @@
 <?php
 namespace Lebran\View\Extension;
 
+use Lebran\View\ExtensionInterface;
+
 /**
  * Template helper.
  *
@@ -32,7 +34,7 @@ class Helper implements ExtensionInterface
     public function getMethods()
     {
         return [
-            '_' => 'escape'
+            'e' => 'escape'
         ];
     }
 

@@ -1,6 +1,8 @@
 <?php
 namespace Lebran\View;
 
+use InvalidArgumentException;
+
 trait FolderTrait
 {
     protected $file_extension;
@@ -39,6 +41,9 @@ trait FolderTrait
 
     public function setSeparator($separator)
     {
+        if(!is_string($separator)){
+            throw new InvalidArgumentException('Separator should be string');
+        }
         $this->separator = $separator;
         return $this;
     }

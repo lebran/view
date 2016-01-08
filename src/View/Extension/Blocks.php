@@ -1,6 +1,8 @@
 <?php
 namespace Lebran\View\Extension;
 
+use Lebran\View\ExtensionInterface;
+
 /**
  * By combining layouts and blocks, allows you to “build up” your pages using predefined blocks.
  *

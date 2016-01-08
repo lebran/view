@@ -1,5 +1,5 @@
 <?php
-namespace Lebran\View\Extension;
+namespace Lebran\View;
 
 /**
  * A common interface for extensions.
