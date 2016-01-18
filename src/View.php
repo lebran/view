@@ -6,6 +6,7 @@ use Lebran\View\Exception;
 use Lebran\View\ExtensionTrait;
 use Lebran\View\FolderTrait;
 use Lebran\View\Extension\ExtensionInterface;
+use Lebran\View\Template;
 
 /**
  * Lebran\Mvc\View is a native PHP template system that's fast and easy to extend.
@@ -46,21 +47,6 @@ class View extends Storage
     use FolderTrait, ExtensionTrait;
 
     /**
-     * @var string The name of last rendered template.
-     */
-    protected $template;
-
-    /**
-     * @var array Stack for parent files.
-     */
-    protected $layouts = [];
-
-    /**
-     * @var string Child content.
-     */
-    protected $content = '';
-
-    /**
      * Initialisation. Prepare extensions.
      *
      * @param array $extensions An array of extensions.
@@ -75,54 +61,12 @@ class View extends Storage
         }
     }
 
-    /**
-     * Render the template and layout.
-     *
-     * @param string $template The name of template.
-     * @param array  $data     An array of data.
-     *
-     * @return string Rendered template.
-     * @throws \Lebran\View\Exception
-     */
     public function render($template, array $data = [])
     {
-        $this->template = $template;
-        $this->storage  = array_merge_recursive($this->storage, $data);
-
-        extract($this->storage);
-        ob_start();
-
-        include $this->resolvePath($this->template);
-
-        if (0 === count($this->layouts)) {
-            return ob_get_clean();
-        } else {
-            $this->content = ob_get_clean();
-            return $this->render(array_pop($this->layouts));
-        }
+        return (new Template($this, $template, array_merge_recursive($data, $this->storage)))->make();
     }
 
-    /**
-     * Set the template's layout.
-     *
-     * @param string $layout The name of layout.
-     *
-     * @return void
-     */
-    protected function extend($layout)
-    {
-        $this->layouts[] = $layout;
-    }
 
-    /**
-     * Prints child content.
-     *
-     * @return void
-     */
-    protected function content()
-    {
-        echo $this->content;
-    }
 
     /**
      * Include view.

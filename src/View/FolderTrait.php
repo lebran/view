@@ -56,7 +56,7 @@ trait FolderTrait
      * @return string Resolved path.
      * @throws \Lebran\View\Exception
      */
-    protected function resolvePath($template)
+    public function resolvePath($template)
     {
         $parts = explode($this->separator, $template);
         $count = count($parts);
