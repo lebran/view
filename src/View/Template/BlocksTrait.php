@@ -1,11 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mindkicker
- * Date: 13.01.16
- * Time: 15:56
- */
-
 namespace Lebran\View\Template;
 
 trait BlocksTrait
@@ -43,43 +36,6 @@ trait BlocksTrait
     }
 
     /**
-     * Start a new section block.
-     *
-     * @param string $name The name of block.
-     */
-    public function block($name)
-    {
-        $this->stack[] = $name;
-        ob_start();
-    }
-
-    /**
-     * End the last section block.
-     *
-     * @param bool $last True - print block.
-     */
-    public function endblock($last = false)
-    {
-        $name = array_pop($this->stack);
-        $view = ob_get_clean();
-        if (array_key_exists($name, $this->parents) && array_key_exists($name, $this->blocks)) {
-            $this->blocks[$name] = $view = str_replace($this->parents[$name], $view, $this->blocks[$name]);
-        }
-
-        if (array_key_exists($name, $this->blocks)) {
-            if ($last) {
-                echo $this->blocks[$name];
-            }
-        } else {
-            if ($last) {
-                echo $view;
-            } else {
-                $this->blocks[$name] = $view;
-            }
-        }
-    }
-
-    /**
      * Returns the content for a section block.
      *
      * @param string $name    The name of block.
@@ -91,6 +47,53 @@ trait BlocksTrait
             echo $this->blocks[$name];
         } else {
             echo $default;
+        }
+    }
+
+
+    /**
+     * Start a new section block.
+     *
+     * @param string $name The name of block.
+     * @param string $content
+     */
+    public function block($name, $content = null)
+    {
+        if($content){
+            if (0 === count($this->layouts)) {
+                echo $content;
+            } else {
+                $this->blocks[$name] = $content;
+            }
+        } else {
+            $this->stack[] = $name;
+            ob_start();
+        }
+    }
+
+    /**
+     * End the last section block.
+     *
+     * @param bool $last True - print block.
+     */
+    public function end($last = false)
+    {
+        $name = array_pop($this->stack);
+        $view = ob_get_clean();
+        if (array_key_exists($name, $this->parents) && array_key_exists($name, $this->blocks)) {
+            $this->blocks[$name] = $view = str_replace($this->parents[$name], $view, $this->blocks[$name]);
+        }
+
+        if (array_key_exists($name, $this->blocks)) {
+            if ($last || 0 === count($this->layouts)) {
+                echo $this->blocks[$name];
+            }
+        } else {
+            if ($last || 0 === count($this->layouts)) {
+                echo $view;
+            } else {
+                $this->blocks[$name] = $view;
+            }
         }
     }
 

@@ -53,5 +53,23 @@ trait ExtensionTrait
         return $this;
     }
 
+    public function getExtension($name)
+    {
+        if(array_key_exists($name, $this->extensions)){
+            return $this->extensions[$name];
+        }
+
+        throw new Exception('The extension method or function "'.$name.'" not found.');
+    }
+
+    public function getFunction($name)
+    {
+        if(array_key_exists($name, $this->functions)){
+            return $this->functions[$name];
+        }
+
+        throw new Exception('The extension method or function "'.$name.'" not found.');
+    }
+
 
 }

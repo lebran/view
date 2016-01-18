@@ -65,21 +65,4 @@ class View extends Storage
     {
         return (new Template($this, $template, array_merge_recursive($data, $this->storage)))->make();
     }
-
-
-
-    /**
-     * Include view.
-     *
-     * @param string $template The name of template.
-     *
-     * @return void
-     * @throws \Lebran\View\Exception
-     */
-    protected function import($template)
-    {
-        $this->template = $template;
-        extract($this->storage);
-        include $this->resolvePath($this->template);
-    }
 }

@@ -8,18 +8,46 @@
 
 namespace Lebran\View;
 
+use Lebran\View;
+use Lebran\View\Template\BlocksTrait;
+
 class Template
 {
+    use BlocksTrait;
+
     /**
      * @var string The name of last rendered template.
      */
     protected $template;
+    /**
+     * @var View The name of last rendered template.
+     */
+    protected $view;
+    /**
+     * @var string The name of last rendered template.
+     */
+    protected $data;
 
     public function __construct($view, $template, $data)
     {
         $this->view = $view;
         $this->template = $template;
         $this->data = $data;
+    }
+
+    /**
+     * Include view.
+     *
+     * @param string $template The name of template.
+     *
+     * @return void
+     * @throws \Lebran\View\Exception
+     */
+    protected function import($template)
+    {
+        $this->template = $template;
+        extract($this->data);
+        include $this->view->resolvePath($this->template);
     }
 
     /**
@@ -38,10 +66,11 @@ class Template
 
         include $this->view->resolvePath($this->template);
 
+
         if (0 === count($this->layouts)) {
             return ob_get_clean();
         } else {
-            $this->blocks[]
+            $this->blocks['content'] = ob_get_clean();
             return $this->make(array_pop($this->layouts));
         }
     }
@@ -50,8 +79,6 @@ class Template
     {
         return $this->view->render($template, $data);
     }
-
-
 
     /**
      * Magic method used to call extension functions.
@@ -64,11 +91,7 @@ class Template
      */
     public function __call($method, $parameters)
     {
-        if (array_key_exists($method, $this->functions)) {
-            return call_user_func_array($this->functions[$method], $parameters);
-        } else {
-            throw new BadMethodCallException('The extension method or function "'.$method.'" not found.');
-        }
+        return call_user_func_array($this->view->getFunction($method), $parameters);
     }
 
     /**
@@ -81,15 +104,6 @@ class Template
      */
     public function __get($name)
     {
-        if (array_key_exists($name, $this->extensions)) {
-            return $this->extensions[$name];
-        } else {
-            throw new Exception('The extension "'.$name.'" not found.');
-        }
-    }
-
-    public function __set($name, $extension)
-    {
-        $this->addExtension($name, $extension);
+        return $this->view->getExtension($name);
     }
 }
