@@ -1,15 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mindkicker
- * Date: 26.11.15
- * Time: 17:55
- */
-
 namespace Lebran\View;
 
 use Closure;
-use BadMethodCallException;
+use Lebran\View\Extension\ExtensionInterface;
 
 trait ExtensionTrait
 {
@@ -28,7 +21,7 @@ trait ExtensionTrait
      *
      * @param ExtensionInterface $extension Extension object.
      *
-     * @return object View object.
+     * @return $this View object.
      */
     public function addExtension(ExtensionInterface $extension)
     {
@@ -53,13 +46,18 @@ trait ExtensionTrait
         return $this;
     }
 
+    public function call($name, $parameters)
+    {
+        return call_user_func_array($this->getFunction($name), $parameters);
+    }
+
     public function getExtension($name)
     {
         if(array_key_exists($name, $this->extensions)){
             return $this->extensions[$name];
         }
 
-        throw new Exception('The extension method or function "'.$name.'" not found.');
+        throw new Exception('The extension method "'.$name.'" not found.');
     }
 
     public function getFunction($name)
@@ -68,7 +66,7 @@ trait ExtensionTrait
             return $this->functions[$name];
         }
 
-        throw new Exception('The extension method or function "'.$name.'" not found.');
+        throw new Exception('The extension function "'.$name.'" not found.');
     }
 
 

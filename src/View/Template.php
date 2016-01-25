@@ -53,9 +53,6 @@ class Template
     /**
      * Render the template and layout.
      *
-     * @param string $template The name of template.
-     * @param array  $data     An array of data.
-     *
      * @return string Rendered template.
      * @throws \Lebran\View\Exception
      */
@@ -71,7 +68,8 @@ class Template
             return ob_get_clean();
         } else {
             $this->blocks['content'] = ob_get_clean();
-            return $this->make(array_pop($this->layouts));
+            $this->template = array_pop($this->layouts);
+            return $this->make();
         }
     }
 
@@ -91,7 +89,7 @@ class Template
      */
     public function __call($method, $parameters)
     {
-        return call_user_func_array($this->view->getFunction($method), $parameters);
+        return $this->view->call($method, $parameters);
     }
 
     /**
@@ -99,7 +97,7 @@ class Template
      *
      * @param string $name The name of extension.
      *
-     * @return object Extension object.
+     * @return View\Extension\ExtensionInterface Extension object.
      * @throws \Lebran\View\Exception
      */
     public function __get($name)

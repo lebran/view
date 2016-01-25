@@ -5,7 +5,7 @@ use InvalidArgumentException;
 
 trait FolderTrait
 {
-    protected $file_extension;
+    protected $file_extension = '';
 
     protected $separator = '::';
 
@@ -20,7 +20,7 @@ trait FolderTrait
      * @param string $name   The name of folder.
      * @param string $folder Path to folder.
      *
-     * @return object View object.
+     * @return $this View object.
      */
     public function addFolder($name, $folder)
     {
@@ -30,13 +30,17 @@ trait FolderTrait
 
     public function addFolders(array $folders)
     {
-        $this->folders = array_merge($this->folders, array_map([$this, 'escapePath']), $folders);
+        $this->folders = array_merge($this->folders, array_map([$this, 'escapePath'], $folders));
         return $this;
     }
 
     public function setFileExtension($extension)
     {
-        $this->file_extension = trim(trim($extension), '.');
+        $extension = trim(trim($extension), '.');
+        if(is_string($extension)){
+            $this->file_extension = $extension;
+        }
+        throw new Exception('Not valid file extension');
     }
 
     public function setSeparator($separator)
@@ -71,7 +75,7 @@ trait FolderTrait
             throw new Exception('Do not use the folder namespace separator "'.$this->separator.'" more than once.');
         }
 
-        if (($path = $this->checkPaths($paths, $folder))) {
+        if ($path = $this->checkPaths($paths, $folder)) {
             return $path;
         }
 
@@ -86,7 +90,7 @@ trait FolderTrait
     protected function checkPaths(array $paths, $folder)
     {
         foreach ($paths as $path) {
-            if (is_file($full = $path.'/'.$folder.'.'.$this->file_extension?$this->file_extension:'')) {
+            if ($full = realpath($path.'/'.$folder.$this->file_extension)) {
                 return $full;
             }
         }
