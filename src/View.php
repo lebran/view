@@ -14,10 +14,9 @@ use Lebran\View\Template;
  *  <code>
  *      $view = new Lebran\Mvc\View();
  *      $view->addExtension(new Lebran\Mvc\View\Blocks())
- *              ->addFolder('main', '/templates/main')
- *              ->addFolder('new', '/templates/new')
- *              ->enableShortTags()
- *              ->render('new::news');
+ *           ->addFolder('main', '/templates/main')
+ *           ->addFolder('new', '/templates/new')
+ *           ->render('new::news');
  *
  *      // templates/new/news.php
  *

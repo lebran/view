@@ -1,8 +1,6 @@
 <?php
 namespace Lebran\View\Extension;
 
-use Lebran\View\ExtensionInterface;
-
 /**
  * This class provides easy way include assets (styles, scripts and images).
  *

@@ -1,6 +1,8 @@
 <?php
 namespace Lebran\View\Template;
 
+use Lebran\View\Exception;
+
 trait BlocksTrait
 {
     /**
@@ -36,22 +38,6 @@ trait BlocksTrait
     }
 
     /**
-     * Returns the content for a section block.
-     *
-     * @param string $name    The name of block.
-     * @param string $default Default block content.
-     */
-    public function output($name, $default = '')
-    {
-        if (array_key_exists($name, $this->blocks)) {
-            echo $this->blocks[$name];
-        } else {
-            echo $default;
-        }
-    }
-
-
-    /**
      * Start a new section block.
      *
      * @param string $name The name of block.
@@ -74,25 +60,26 @@ trait BlocksTrait
     /**
      * End the last section block.
      *
-     * @param bool $last True - print block.
+     * @param bool $print True - print block.
+     * @throws Exception
      */
-    public function end($last = false)
+    public function end($print = false)
     {
-        $name = array_pop($this->stack);
-        $view = ob_get_clean();
-        if (array_key_exists($name, $this->parents) && array_key_exists($name, $this->blocks)) {
-            $this->blocks[$name] = $view = str_replace($this->parents[$name], $view, $this->blocks[$name]);
+        if(empty($name = array_pop($this->stack))){
+            throw new Exception('');
         }
 
-        if (array_key_exists($name, $this->blocks)) {
-            if ($last || 0 === count($this->layouts)) {
-                echo $this->blocks[$name];
-            }
+        $html = ob_get_clean();
+        if (array_key_exists($name, $this->parents)) {
+            $this->blocks[$name] = str_replace($this->parents[$name], $html, $this->blocks[$name]);
+            unset($this->parents[$name]);
+        }
+
+        if($print || 0 === count($this->layouts)){
+            echo array_key_exists($name, $this->blocks)? $this->blocks[$name]:$html;
         } else {
-            if ($last || 0 === count($this->layouts)) {
-                echo $view;
-            } else {
-                $this->blocks[$name] = $view;
+            if(!array_key_exists($name, $this->blocks)){
+                $this->blocks[$name] = $html;
             }
         }
     }

@@ -1,8 +1,6 @@
 <?php
 namespace Lebran\View\Extension;
 
-use Lebran\View\ExtensionInterface;
-
 /**
  * Template helper.
  *

@@ -1,28 +1,24 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: mindkicker
- * Date: 08.01.16
- * Time: 15:37
- */
-
 namespace Lebran\View;
 
 use Lebran\View;
 use Lebran\View\Template\BlocksTrait;
+use Lebran\View\Extension\ExtensionInterface;
 
 class Template
 {
     use BlocksTrait;
 
     /**
-     * @var string The name of last rendered template.
-     */
-    protected $template;
-    /**
      * @var View The name of last rendered template.
      */
     protected $view;
+
+    /**
+     * @var string The name of last rendered template.
+     */
+    protected $template;
+
     /**
      * @var string The name of last rendered template.
      */
@@ -97,7 +93,7 @@ class Template
      *
      * @param string $name The name of extension.
      *
-     * @return View\Extension\ExtensionInterface Extension object.
+     * @return ExtensionInterface Extension object.
      * @throws \Lebran\View\Exception
      */
     public function __get($name)

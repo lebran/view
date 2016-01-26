@@ -5,8 +5,14 @@ use InvalidArgumentException;
 
 trait FolderTrait
 {
+    /**
+     * @var string The file extension.
+     */
     protected $file_extension = '';
 
+    /**
+     * @var string Folder namespace separator.
+     */
     protected $separator = '::';
 
     /**
@@ -39,6 +45,7 @@ trait FolderTrait
         $extension = trim(trim($extension), '.');
         if(is_string($extension)){
             $this->file_extension = $extension;
+            return $this;
         }
         throw new Exception('Not valid file extension');
     }
